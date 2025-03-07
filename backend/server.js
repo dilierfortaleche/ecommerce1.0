@@ -1,32 +1,20 @@
-const express = require("express");
-const dotenv = require("dotenv");
-const cors = require("cors");
-const connectDB = require("./src/config/db");
-const authRoutes = require("./src/routes/authRoutes").router;
-const productRoutes = require("./src/routes/productRoutes");
-const userRoutes = require("./src/routes/userRoutes");
+const express = require('express');
+const connectDB = require('./src/config/db');
+const cors = require('cors');
 
-dotenv.config();
 const app = express();
 
-// Middlewares
-app.use(express.json()); 
-app.use(cors()); 
+// Conectar a la base de datos
+connectDB();
 
-// Rutas
-app.use("/api/auth", authRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/users", userRoutes);
+// Inicializar Middleware
+app.use(express.json({ extended: false }));
+app.use(cors());
 
-// Conectar a la base de datos y luego iniciar el servidor
+// Definir rutas
+app.use('/api/users', require('./src/routes/Users'));
+app.use('/api/auth', require('./src/routes/auth'));
+
 const PORT = process.env.PORT || 5000;
 
-connectDB()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`🚀 Servidor en http://localhost:${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error("❌ Error al conectar a MongoDB:", err);
-  });
+app.listen(PORT, () => console.log(`Servidor iniciado en el puerto ${PORT}`));
